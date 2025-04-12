@@ -23,7 +23,7 @@ def summarize():
     abstracts = fetch_pubmed_abstracts(query)
     if not abstracts:
         return jsonify({"summary": "Sorry, no abstracts were found."})
-
+    
     summary = summarize_with_openai(abstracts[0])
     return jsonify({"summary": summary})
 
