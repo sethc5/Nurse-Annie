@@ -9,6 +9,24 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "Nurse Annie API is running!"})
+
+@app.route("/summarize", methods=["POST"])
+def summarize():
+    data = request.get_json()
+    query = data.get("query", "")
+    if not query:
+        return jsonify({"error": "Missing query"}), 400
+
+    abstracts = fetch_pubmed_abstracts(query)
+    if not abstracts:
+        return jsonify({"summary": "Sorry, no abstracts were found."})
+
+    summary = summarize_with_openai(abstracts[0])
+    return jsonify({"summary": summary})
+
 def fetch_pubmed_abstracts(query, max_results=1):
     base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
     params = {
@@ -18,7 +36,7 @@ def fetch_pubmed_abstracts(query, max_results=1):
         "retmode": "json"
     }
     r = requests.get(base_url, params=params)
-    ids = r.json()["esearchresult"]["idlist"]
+    ids = r.json().get("esearchresult", {}).get("idlist", [])
     abstracts = []
 
     for pmid in ids:
@@ -59,26 +77,9 @@ Here’s the abstract:
         temperature=0.4
     )
     return response.choices[0].message["content"].strip()
-@app.route("/", methods=["GET"])
-def home():
-    return jsonify({"message": "Nurse Annie API is running!"})
-@app.route("/summarize", methods=["POST"])
-def summarize():
-    data = request.get_json()
-    query = data.get("query", "")
-    if not query:
-        return jsonify({"error": "Missing query"}), 400
-
-    abstracts = fetch_pubmed_abstracts(query)
-    if not abstracts:
-        return jsonify({"summary": "Sorry, no abstracts were found."})
-    
-    summary = summarize_with_openai(abstracts[0])
-    return jsonify({"summary": summary})
-
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+
 
