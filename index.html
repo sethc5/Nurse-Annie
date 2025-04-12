@@ -54,31 +54,30 @@
   </div>
 
   <script>
-    async function fetchSummary() {
-      const query = document.getElementById("query").value;
-      if (!query.trim()) {
-        alert("Please enter a condition.");
-        return;
-      }
-
-      document.getElementById("summaryBox").style.display = "block";
-      document.getElementById("summaryText").innerText = "Fetching summary...";
-
-      try {
-        const response = await fetch("https://nurse-annie-api.onrender.com/summarize", {
-
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query })
-        });
-
-        const data = await response.json();
-        document.getElementById("summaryText").innerText = data.summary || "No summary available.";
-      } catch (error) {
-        console.error(error);
-        document.getElementById("summaryText").innerText = "Error fetching summary.";
-      }
+  async function fetchSummary() {
+    const query = document.getElementById("query").value;
+    if (!query.trim()) {
+      alert("Please enter a condition.");
+      return;
     }
-  </script>
+
+    document.getElementById("summaryBox").style.display = "block";
+    document.getElementById("summaryText").innerText = "Fetching summary...";
+
+    try {
+      const response = await fetch("https://nurse-annie-api.onrender.com/summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query })
+      });
+
+      const data = await response.json();
+      document.getElementById("summaryText").innerText = data.summary || "No summary available.";
+    } catch (error) {
+      console.error("Fetch error:", error);
+      document.getElementById("summaryText").innerText = "Error fetching summary.";
+    }
+  }
+</script>
 </body>
 </html>
