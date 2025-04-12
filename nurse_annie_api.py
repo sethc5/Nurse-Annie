@@ -1,5 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import requests
+import os
+import openai
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -14,12 +17,9 @@ def summarize():
     query = data.get("query", "")
     if not query:
         return jsonify({"error": "Missing query"}), 400
-    return jsonify({"summary": f"This is a placeholder summary for: {query}"})
 
-if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    # return test response (replace later)
+    return jsonify({"summary": f"This is a placeholder summary for: {query}"})
 
 
 def fetch_pubmed_abstracts(query, max_results=1):
@@ -73,8 +73,10 @@ Here’s the abstract:
     )
     return response.choices[0].message["content"].strip()
 
+
+# ✅ Only ONE main entry point
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
+    print("🚀 Starting Flask app on port", port)
     app.run(host="0.0.0.0", port=port, debug=True)
-
 
