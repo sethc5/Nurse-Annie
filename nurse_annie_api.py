@@ -76,6 +76,7 @@ def summarize():
     summary = summarize_with_openai(abstracts[0])
     return jsonify({"summary": summary})
 
+
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 5000))
