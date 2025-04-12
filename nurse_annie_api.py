@@ -59,7 +59,9 @@ Here’s the abstract:
         temperature=0.4
     )
     return response.choices[0].message["content"].strip()
-
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "Nurse Annie API is running!"})
 @app.route("/summarize", methods=["POST"])
 def summarize():
     data = request.get_json()
