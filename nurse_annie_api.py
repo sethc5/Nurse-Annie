@@ -1,13 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import requests
-import os
-import openai
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route("/", methods=["GET"])
 def home():
@@ -19,13 +14,13 @@ def summarize():
     query = data.get("query", "")
     if not query:
         return jsonify({"error": "Missing query"}), 400
+    return jsonify({"summary": f"This is a placeholder summary for: {query}"})
 
-    abstracts = fetch_pubmed_abstracts(query)
-    if not abstracts:
-        return jsonify({"summary": "Sorry, no abstracts were found."})
-    
-    summary = summarize_with_openai(abstracts[0])
-    return jsonify({"summary": summary})
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
+
 
 def fetch_pubmed_abstracts(query, max_results=1):
     base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
